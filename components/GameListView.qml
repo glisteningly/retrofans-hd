@@ -159,6 +159,25 @@ Item {
                 keyNavigationEnabled: true
 //                focus: listContent.activeFocus
 
+                // jump to bottom
+                Keys.onUpPressed: {
+                    if (gameView.currentIndex === 0) {
+                        gameView.currentIndex = items.count - 1
+                    } else {
+                        event.accepted = false;
+                    }
+
+                }
+
+                // jump to top
+                Keys.onDownPressed: {
+                    if (gameView.currentIndex === gameView.count - 1) {
+                        gameView.currentIndex = 0
+                    } else {
+                        event.accepted = false;
+                    }
+                }
+
                 Keys.onRightPressed: {
                     event.accepted = true
                     gameView.currentIndex = Math.min(gameView.currentIndex + 10, items.count - 1)

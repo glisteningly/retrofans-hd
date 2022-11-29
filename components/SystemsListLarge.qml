@@ -1,7 +1,7 @@
 import QtQuick 2.12
 import QtGraphicalEffects 1.12
-//import QtQuick.Controls 2.15
 
+//import QtQuick.Controls 2.15
 ListView {
     id: systemsListView
 
@@ -41,34 +41,56 @@ ListView {
     keyNavigationWraps: false
     spacing: 50
     move: Transition {
-        NumberAnimation { properties: "x,y"; duration: 3000 }
+        NumberAnimation {
+            properties: "x,y"
+            duration: 3000
+        }
     }
     displaced: Transition {
-        NumberAnimation { properties: "x,y"; duration: 3000 }
+        NumberAnimation {
+            properties: "x,y"
+            duration: 3000
+        }
     }
     Keys.onLeftPressed: {
-        decrementCurrentIndex(); systemsBackground.bgIndex = currentIndex
+        if (systemsListView.currentIndex === 0) {
+            systemsListView.positionViewAtEnd()
+            systemsListView.currentIndex = allSystems.count - 1
+        } else {
+            decrementCurrentIndex()
+        }
+
+        systemsBackground.bgIndex = currentIndex
     }
 
     Keys.onRightPressed: {
-        incrementCurrentIndex(); systemsBackground.bgIndex = currentIndex
+        if (systemsListView.currentIndex === allSystems.count - 1) {
+            systemsListView.positionViewAtBeginning()
+            systemsListView.currentIndex = 0
+        } else {
+            incrementCurrentIndex()
+        }
+
+        systemsBackground.bgIndex = currentIndex
     }
 
     Keys.onPressed: {
         //Next page
         if (api.keys.isPageDown(event)) {
             event.accepted = true
-            systemsListView.currentIndex = Math.min(systemsListView.currentIndex + 10, allSystems.count - 1)
+            systemsListView.currentIndex = Math.min(
+                        systemsListView.currentIndex + 10, allSystems.count - 1)
             systemsBackground.bgIndex = currentIndex
             return
         }
 
         //Prev collection
         if (api.keys.isPageUp(event)) {
-            event.accepted = true;
-            systemsListView.currentIndex = Math.max(systemsListView.currentIndex - 10, 0);
+            event.accepted = true
+            systemsListView.currentIndex = Math.max(
+                        systemsListView.currentIndex - 10, 0)
             systemsBackground.bgIndex = currentIndex
-            return;
+            return
         }
 
         event.accepted = false
@@ -79,12 +101,11 @@ ListView {
     }
 
     function delay(delayTime, cb) {
-        timer.interval = delayTime;
-        timer.repeat = false;
-        timer.triggered.connect(cb);
-        timer.start();
+        timer.interval = delayTime
+        timer.repeat = false
+        timer.triggered.connect(cb)
+        timer.start()
     }
-
 
     PageIndicator {
         currentIndex: systemsListView.currentIndex
@@ -107,11 +128,19 @@ ListView {
         color: theme.background_dark
         Behavior on bgIndex {
             ColorAnimation {
-                target: systemsBackground; property: "color"; to: systemInfoList[allSystems.get(currentIndex).shortName].color || systemInfoList["default"].color; duration: 335
+                target: systemsBackground
+                property: "color"
+                to: systemInfoList[allSystems.get(currentIndex).shortName].color
+                    || systemInfoList["default"].color
+                duration: 335
             }
         }
         transitions: Transition {
-            ColorAnimation { properties: "color"; easing.type: Easing.InOutQuad ; duration: 335 }
+            ColorAnimation {
+                properties: "color"
+                easing.type: Easing.InOutQuad
+                duration: 335
+            }
         }
     }
 
@@ -121,8 +150,9 @@ ListView {
 
     Component.onCompleted: {
         positionViewAtIndex(currentSystemIndex, ListView.Center)
-        delay(200, function() {
-            systemsListView.positionViewAtIndex(currentSystemIndex, ListView.Center)
+        delay(200, function () {
+            systemsListView.positionViewAtIndex(currentSystemIndex,
+                                                ListView.Center)
             systemsBackground.bgIndex = currentIndex
         })
     }
@@ -130,8 +160,9 @@ ListView {
     onVisibleChanged: {
         if (visible) {
             positionViewAtIndex(currentSystemIndex, ListView.Center)
-            delay(50, function() {
-                systemsListView.positionViewAtIndex(currentSystemIndex, ListView.Center)
+            delay(50, function () {
+                systemsListView.positionViewAtIndex(currentSystemIndex,
+                                                    ListView.Center)
                 systemsBackground.bgIndex = currentIndex
             })
         }
@@ -147,30 +178,29 @@ ListView {
     //    onEnabledChanged: {
     //        console.log("ENABLED: " + enabled);
     //    }
-
     Component {
         id: systemsDelegate
-
 
         Item {
             id: system_listitem_container
             width: layoutScreen.width
             height: layoutScreen.height
             scale: 1.0
-            
+
             z: 100 - index
             Keys.onPressed: {
                 if (api.keys.isAccept(event)) {
-                    event.accepted = true;
-                    
+                    event.accepted = true
+
                     //We update the collection we want to browse
                     setCollectionListIndex(0)
-                    setSystemIndex(system_listitem_container.ListView.view.currentIndex)
+                    setSystemIndex(
+                                system_listitem_container.ListView.view.currentIndex)
 
                     //We change Pages
-                    navigate('GamesPage');
-                    
-                    return;
+                    navigate('GamesPage')
+
+                    return
                 }
                 //                if (api.keys.isFilters(event)) {
                 //                    event.accepted = true;
@@ -179,13 +209,12 @@ ListView {
                 //                }
             }
 
-
             Rectangle {
                 id: systemsListView_item
                 width: parent.width
                 height: parent.height
-                color:  "transparent"
-                
+                color: "transparent"
+
                 Image {
                     id: menu_mask
                     height: layoutScreen.height
@@ -196,11 +225,11 @@ ListView {
                     z: 0
                     source: "../assets/images/bg_system_line.png"
                 }
-                
+
                 Image {
                     id: device
                     //                    source: "../assets/images/devices/"+modelData.shortName+".png"
-                    source: "../assets/images/hardware/"+modelData.shortName+".png"
+                    source: "../assets/images/hardware/" + modelData.shortName + ".png"
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.rightMargin: -vpx(40)
@@ -214,31 +243,56 @@ ListView {
                     scale: systemInfoList[modelData.shortName].thumb_scale ? 0.8 : 1.0
                     states: [
 
-                        State{
-                            name: "inactiveRight"; when: !(system_listitem_container.ListView.isCurrentItem) && currentIndex < index
-                            PropertyChanges { target: device; anchors.rightMargin: -vpx(160); opacity: 1.0}
-                        },
-
-                        State{
-                            name: "inactiveLeft"; when: !(system_listitem_container.ListView.isCurrentItem) && currentIndex > index
-                            PropertyChanges { target: device; anchors.rightMargin: vpx(40); opacity: 1.0}
+                        State {
+                            name: "inactiveRight"
+                            when: !(system_listitem_container.ListView.isCurrentItem)
+                                  && currentIndex < index
+                            PropertyChanges {
+                                target: device
+                                anchors.rightMargin: -vpx(160)
+                                opacity: 1.0
+                            }
                         },
 
                         State {
-                            name: "active"; when: system_listitem_container.ListView.isCurrentItem
-                            PropertyChanges { target: device; anchors.rightMargin: -vpx(40); opacity: 1.0;}
+                            name: "inactiveLeft"
+                            when: !(system_listitem_container.ListView.isCurrentItem)
+                                  && currentIndex > index
+                            PropertyChanges {
+                                target: device
+                                anchors.rightMargin: vpx(40)
+                                opacity: 1.0
+                            }
                         },
 
                         State {
-                            name: "inactive"; when: system_listitem_container.ListView.isCurrentItem
-                            PropertyChanges { target: device; anchors.rightMargin: -vpx(40); opacity: 1.0;}
+                            name: "active"
+                            when: system_listitem_container.ListView.isCurrentItem
+                            PropertyChanges {
+                                target: device
+                                anchors.rightMargin: -vpx(40)
+                                opacity: 1.0
+                            }
+                        },
+
+                        State {
+                            name: "inactive"
+                            when: system_listitem_container.ListView.isCurrentItem
+                            PropertyChanges {
+                                target: device
+                                anchors.rightMargin: -vpx(40)
+                                opacity: 1.0
+                            }
                         }
                     ]
 
                     transitions: Transition {
-                        NumberAnimation { properties: "scale, opacity, anchors.rightMargin"; easing.type: Easing.InOutCubic; duration: 225  }
+                        NumberAnimation {
+                            properties: "scale, opacity, anchors.rightMargin"
+                            easing.type: Easing.InOutCubic
+                            duration: 225
+                        }
                     }
-                    
                 }
 
                 //                //主标题
@@ -260,10 +314,9 @@ ListView {
                 //                    anchors.leftMargin: vpx(60)
                 //                    anchors.verticalCenterOffset: vpx(15)
                 //                }
-
                 Image {
                     id: title
-                    source: "../assets/images/logos/"+modelData.shortName+".png"
+                    source: "../assets/images/logos/" + modelData.shortName + ".png"
                     width: vpx(480)
                     height: vpx(100)
                     fillMode: Image.PreserveAspectFit
@@ -285,7 +338,7 @@ ListView {
                     radius: 5
                     //                    samples: 10
                 }
-                
+
                 Text {
                     text: modelData.games.count + " " + dataText[lang].global_games
                     font {
@@ -325,7 +378,7 @@ ListView {
                     visible: false
                     width: 64
                     height: 28
-                    color: systemsListView.activeFocus ? "#000000"  : "#20ffffff"
+                    color: systemsListView.activeFocus ? "#000000" : "#20ffffff"
                     anchors.topMargin: 12
                     radius: 8
                     anchors.top: title.bottom
@@ -338,7 +391,7 @@ ListView {
                         font.pixelSize: 12
                         font.letterSpacing: 0
                         font.bold: true
-                        color: systemsListView.activeFocus ? "#ffffff"  : "#ffffff"
+                        color: systemsListView.activeFocus ? "#ffffff" : "#ffffff"
                     }
                 }
 
@@ -377,7 +430,7 @@ ListView {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.bottomMargin: -30
             }
-            
+
             // DropShadow {
             //     anchors.fill: systems__item
             //     horizontalOffset: 3
@@ -387,9 +440,6 @@ ListView {
             //     color: "#80000000"
             //     source: systems__item
             // }
-
         }
     }
-    
-
 }
