@@ -9,10 +9,22 @@ const systemInfoList = {
     "color": "#920E00",
     "company": "Nintendo"
   },
+  "gc": {
+    "short": "gc",
+    "color": "#920E00",
+    "company": "Nintendo"
+  },
+  "3ds": {
+    "short": "3ds",
+    "color": "#920E00",
+    "company": "Nintendo",
+    "thumb_scale": true
+  },
   "nds": {
     "short": "nds",
     "color": "#920E00",
-    "company": "Nintendo"
+    "company": "Nintendo",
+    "thumb_scale": true
   },
   "famicom": {
     "short": "fc",
@@ -147,6 +159,11 @@ const systemInfoList = {
     "color": "#FF7043",
     "company": "NEC"
   },
+  "pc-fx": {
+    "short": "pc-fx",
+    "color": "#FF7043",
+    "company": "NEC"
+  },
   "cps": {
     "short": "tg16",
     "color": "#ECAF00",
@@ -200,5 +217,21 @@ const systemInfoList = {
     "color": "#00838F",
     "company": "igs",
         "thumb_scale": true
-  }
+  },
+  "atarilynx": {
+    "short": "atarilynx",
+    "color": "#E22B2B",
+    "company": "atari",
+    "thumb_scale": true
+  },
+  "atari": {
+    "short": "atari",
+    "color": "#E22B2B",
+    "company": "atari"
+  },
+  "3do": {
+    "short": "3do",
+    "color": "#006202",
+    "company": "Panasonic"
+  },
 }
