@@ -100,6 +100,11 @@ Item {
     onFocusChanged: {
         if (focus) {
             gameView.focus = true
+            if (gameView.currentIndex > 0) {
+                 const _index = gameView.currentIndex
+                 gameView.currentIndex = -1
+                 gameView.currentIndex = _index
+             }
         }
     }
 
